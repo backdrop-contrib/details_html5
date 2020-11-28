@@ -1,8 +1,8 @@
 Details HTML5 Element
 =====================
 
-Details HTML5 enables a new Form API element that renders the new HTML5 details
-and summary tags.
+Details HTML5 enables a new Form API field type that renders the new HTML5
+details and summary tags.
 
 In general, you will only need to enable this module if another module requires
 it.  As a demonstration, this module updates two pages to use details elements:
@@ -23,13 +23,13 @@ Documentation
 -------------
 
 Additional documentation is located in the Wiki:
-https://github.com/backdrop-contrib/details-html5/wiki/Documentation.
+https://github.com/backdrop-contrib/details_html5/wiki/Documentation.
 
 Issues
 ------
 
 Bugs and Feature requests should be reported in the Issue Queue:
-https://github.com/backdrop-contrib/details-html5/issues.
+https://github.com/backdrop-contrib/details_html5/issues.
 
 Current Maintainers
 -------------------

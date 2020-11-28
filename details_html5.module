@@ -1,0 +1,172 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function details_html5_theme() {
+  return array(
+    'details' => array(
+      'render element' => 'element',
+    ),
+  );
+}
+
+/**
+ * Implements hook_elmeent_info().
+ *
+ * Registers the details element with Form API.
+ */
+function details_html5_element_info() {
+  return array(
+    'details' => array(
+      '#summary' => NULL,
+      '#details' => NULL,
+      '#open' => FALSE,
+      '#theme_wrappers' => array('details'),
+    ),
+  );
+}
+
+/**
+ * Processes a details element.
+ *
+ * @param array $element
+ *   An associative array containing the properties and children of the
+ *   details.
+ * @param array $form_state
+ *   The $form_state array for the form this element belongs to.
+ *
+ * @return array
+ *   The processed element.
+ */
+function form_process_details($element, &$form_state) {
+  // Generate the ID of the element if it's not explicitly given.
+  if (!array_key_exists('#id', $element)) {
+    $element['#id'] = backdrop_html_id(implode('-', $element['#parents']) . '-wrapper');
+  }
+  return $element;
+}
+
+/**
+ * Returns HTML to wrap children in a details element.
+ *
+ * Used for grouped form items. Can also be used as a theme wrapper for any
+ * renderable element, to surround it with a <details> tag and add attributes
+ * such as classes or a HTML id.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - element: An associative array containing the properties of the element.
+ *     Properties used: #id, #attributes, #children, #summary, #details, #open.
+ *
+ * @return string
+ *   The rendered html output.
+ *
+ * @ingroup themeable
+ */
+function theme_details($variables) {
+  $element = $variables['element'];
+  // Ensure #attributes is set.
+  $element += array('#attributes' => array());
+
+  // Special handling for form elements.
+  if (isset($element['#array_parents'])) {
+    // Assign a html ID.
+    if (!array_key_exists('id', $element['#attributes'])) {
+      $element['#attributes']['id'] = $element['#id'];
+    }
+    // Add the form-wrapper class.
+    if (empty($element['#attributes']['class'])) {
+      $element['#attributes']['class'][] = 'form-wrapper';
+    }
+  }
+  // Set initial collapsed/expanded display.
+  if (isset($element['#open']) && $element['#open']) {
+    $element['#attributes']['open'] = 'open';
+  }
+
+  $output = '<details' . backdrop_attributes($element['#attributes']) . '>';
+  $output .= '<summary><span>' . $element['#summary'] . '</span></summary>';
+  if (isset($element['#details']) && !empty($element['#details'])) {
+    $output .= '<div class="details-content-wrapper">' . $element['#details'] . '</div>';
+  }
+  if (isset($element['#children']) && !empty($element['#children'])) {
+    $output .= '<div class="details-child-wrapper">' . $element['#children'] . '</div>';
+  }
+  $output .= '</details>';
+  backdrop_add_css(backdrop_get_path('module', 'details_html5') . '/css/details_html5.css');
+
+  return $output;
+}
+
+/**
+ * Convert a fieldset element to a details element.
+ *
+ * @param array  $fieldset
+ *   The form API element to be converted.  Must have '#type' => 'fieldset'.
+ * @return array
+ *   An equivalent details form API element.
+ */
+function details_html5_convert_fieldset(&$fieldset) {
+  if ($fieldset['#type'] != 'fieldset') {
+    watchdog('details_html5', 'Attempting to convert a non-fieldset element.', array(), WATCHDOG_WARNING);
+    return;
+  }
+
+  $fieldset['#type'] = 'details';
+  $fieldset['#summary'] = $fieldset['#title'];
+  $fieldset['#open'] = array_key_exists('#collapsed', $fieldset) ? $fieldset['#collapsed'] : TRUE;
+
+  // Remove fields not used by details.
+  unset($fieldset['#collapsed']);
+  unset($fieldset['#collapsible']);
+  unset($fieldset['#title']);
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function details_html5_form_alter(&$form, &$form_state, $form_id) {
+  global $theme_key;
+
+  // Add CSS for core themes to all forms.
+  switch($theme_key) {
+    case 'basis':
+      $form['#attached']['css'][] = backdrop_get_path('module', 'details_html5') . '/css/details_basis.css';
+      break;
+    case 'seven':
+      $form['#attached']['css'][] = backdrop_get_path('module', 'details_html5') . '/css/details_seven.css';
+      break;
+    default:
+  }
+}
+
+/**
+ * Implements hook_form_FORM_alter() for the dblog_filter_form form.
+ */
+function details_html5_form_dblog_filter_form_alter(&$form, &$form_state) {
+  details_html5_convert_fieldset($form['filters']);
+}
+
+/**
+ * Implements hook_form_FORM_alter() for the dblog_clear_log_form form.
+ */
+function details_html5_form_dblog_clear_log_form_alter(&$form, &$form_state) {
+  details_html5_convert_fieldset($form['dblog_clear']);
+}
+
+/**
+ * Implements hook_form_FORM_alter() for the system_theme_settings form.
+ */
+function details_html5_form_system_theme_settings_alter(&$form, &$form_state) {
+  if (empty($form['theme']['#value']) || $form['theme']['#value'] != 'basis') {
+    return;
+  }
+
+  foreach($form as $field_key => $field) {
+    if (array_key_exists('#type', $field) && $field['#type'] == 'fieldset') {
+      details_html5_convert_fieldset($form[$field_key]);
+    }
+  }
+}

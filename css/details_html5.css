@@ -1,0 +1,8 @@
+
+details summary {
+  display: list-item;
+  cursor: pointer;
+}
+details summary:focus:not(:focus-visible) {
+  outline: none;
+}

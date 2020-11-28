@@ -1,0 +1,6 @@
+name = HTML5 Details Element
+description = Adds FAPI support for the HTML5 details element
+type = module
+backdrop = 1.x
+package = Fields
+version = 1.x-1.0

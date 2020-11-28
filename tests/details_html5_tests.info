@@ -1,0 +1,5 @@
+[DetailsElementsRenderTestCase]
+name = Details element functionality
+description = Test the details element.
+group = Details HTML5
+file = details_html5.test

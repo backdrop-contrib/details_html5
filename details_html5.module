@@ -115,7 +115,7 @@ function details_html5_convert_fieldset(&$fieldset) {
 
   $fieldset['#type'] = 'details';
   $fieldset['#summary'] = $fieldset['#title'];
-  $fieldset['#open'] = array_key_exists('#collapsed', $fieldset) ? $fieldset['#collapsed'] : TRUE;
+  $fieldset['#open'] = empty($fieldset['#collapsed']);
 
   // Remove fields not used by details.
   unset($fieldset['#collapsed']);
@@ -165,7 +165,7 @@ function details_html5_form_system_theme_settings_alter(&$form, &$form_state) {
   }
 
   foreach($form as $field_key => $field) {
-    if (array_key_exists('#type', $field) && $field['#type'] == 'fieldset') {
+    if (is_array($field) && array_key_exists('#type', $field) && $field['#type'] == 'fieldset') {
       details_html5_convert_fieldset($form[$field_key]);
     }
   }

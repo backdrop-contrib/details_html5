@@ -1,7 +1,27 @@
 <?php
 
+class DetailsElementsRenderTest extends BackdropWebTestCase {
 
-class DetailsElementsRenderTestCase extends BackdropWebTestCase {
+  public function setup() {
+    parent::setup(array('details_html5'));
+  }
+
+  /**
+   * Asserts that an array of elements is rendered properly.
+   *
+   * @param array $elements
+   *   An array of associative arrays describing render elements and their
+   *   expected markup. Each item in $elements must contain the following:
+   *   - 'name': This human readable description will be displayed on the test
+   *     results page.
+   *   - 'value': This is the render element to test.
+   *   - 'expected': This is the expected markup for the element in 'value'.
+   */
+  function assertElements($elements) {
+    foreach($elements as $element) {
+      $this->assertIdentical(backdrop_render($element['value']), $element['expected'], '"' . $element['name'] . '" input rendered correctly by backdrop_render().');
+    }
+  }
 
   /**
    * Tests system #type 'details'.

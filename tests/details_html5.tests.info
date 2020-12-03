@@ -1,4 +1,4 @@
-[DetailsElementsRenderTestCase]
+[DetailsElementsRenderTest]
 name = Details element functionality
 description = Test the details element.
 group = Details HTML5

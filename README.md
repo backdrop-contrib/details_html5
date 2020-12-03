@@ -34,7 +34,6 @@ https://github.com/backdrop-contrib/details_html5/issues.
 Current Maintainers
 -------------------
 
-- [indigoxela](https://github.com/indigoxela).
 - [John Franklin](https://github.com/jlfranklin).
 - Seeking additional maintainers.
 
